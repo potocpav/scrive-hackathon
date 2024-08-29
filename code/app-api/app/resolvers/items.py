@@ -6,6 +6,7 @@ import uuid
 import logging
 from .. import couchbase as cb, env
 from ..auth import IsAuthenticated
+import requests
 
 logger = logging.getLogger(__name__)
 
