@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useLazyQuery } from '@apollo/client'
 import {
   DOCUMENT,
+  QUERY,
 } from '../graphql/document'
 
 interface DocumentT {
@@ -32,16 +33,13 @@ const Document: React.FC<Props> = ({document, setPage}) => {
   const [queryLoading, setQueryLoading] = useState(false);
   const { data, loading, error } = useQuery(DOCUMENT, {variables:
       {id: document.id, filename: document.filename}});
+  const [queryQuery, queryRes] = useLazyQuery(QUERY, {onCompleted: () => setQueryLoading(false)})
 
 
-  const handleQuery = async () => {
+  const handleQuery = () => {
     if (!queryText.trim()) return
-
-    console.log("queried");
     setQueryLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
-    console.log("2 seconds");
-    setQueryLoading(false);
+    queryQuery({variables: {id: document.id, query: queryText}});
     // await search({ variables: { items: [{ name: searchText }] } })
   }
 
@@ -123,13 +121,6 @@ const Document: React.FC<Props> = ({document, setPage}) => {
                 {document.tags ? (<i>empty</i>) : document.tags}
               </td>
             </tr>
-            {/* <tr>
-              <td>
-                JSON
-              </td><td>
-                {document.jsonstring}
-              </td>
-            </tr> */}
           </tbody>
         </table>
         <div>
@@ -142,6 +133,7 @@ const Document: React.FC<Props> = ({document, setPage}) => {
             className="join-item flex-grow input input-bordered input-md input-primary"
             value={queryText}
             onChange={(e) => setQueryText(e.target.value)}
+            onKeyDown={(e) => { if (e.key == "Enter") {handleQuery()} } }
           />
           <button
             className="join-item btn btn-md btn-primary px-3"
