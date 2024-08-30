@@ -11,7 +11,58 @@ import os
 import json
 import base64
 
+from langchain_openai import ChatOpenAI
+from langchain_chroma import Chroma
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_core.prompts import PromptTemplate
+from langchain_community.document_loaders import PyPDFLoader
+
 logger = logging.getLogger(__name__)
+
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+def aiquery(docPath:str, query:str)->str:
+    loader = PyPDFLoader(docPath)
+    pages = loader.load_and_split()
+
+    llm = ChatOpenAI(model="gpt-4o-mini")
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    splits = text_splitter.split_documents(pages)
+    vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+
+    # Retrieve and generate using the relevant snippets of the blog.
+    retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+
+    retrieved_docs = retriever.invoke(query)
+
+    template = """Use the following pieces of context to answer the question at the end.
+    If you don't know the answer, just say that you don't know, don't try to make up an answer.
+    Use three sentences maximum and keep the answer as concise as possible.
+
+    {context}
+
+    Question: {question}
+
+    Helpful Answer:"""
+    custom_rag_prompt = PromptTemplate.from_template(template)
+
+    rag_chain = (
+        {"context": retriever | format_docs, "question": RunnablePassthrough()}
+        | custom_rag_prompt
+        | llm
+        | StrOutputParser()
+    )
+
+    result = rag_chain.invoke(query)
+    return result
 
 @strawberry.type
 class Document:
@@ -31,6 +82,33 @@ class DocumentFile:
     name:str
     endpoint:str
     data:str
+
+@strawberry.type
+class DocumentContent:
+    message:str
+
+def get_docuemntContent(docPath:str, query:str)->DocumentContent:
+    isExist = False
+
+    try:
+        isExist = cb.get(env.get_couchbase_conf(),
+                        cb.DocRef(bucket=env.get_couchbase_bucket(),
+                                    collection='docs',
+                                    key=docPath))
+    except:
+        pass
+
+    if not isExist:
+        return DocumentContent(message="")
+
+    print(isExist)
+    with open(docPath,"wb") as f:
+        f.write(base64.b64decode(isExist.value["base64string"]))
+
+    result = aiquery(docPath, query)
+    print(result)
+    os.remove(docPath)
+    return DocumentContent(message=result)
 
 def list_documents():
     resultJson = scriveRequest('/api/v2/documents/list')
@@ -86,6 +164,10 @@ class Query:
     @strawberry.field
     def documentFile(self, id:str, filename:str) -> DocumentFile:
         return get_documentFile(id, filename)
+
+    @strawberry.field
+    def documentContent(self, docPath:str, query:str) -> DocumentContent:
+        return get_docuemntContent(docPath,query)
 
 def get_auth_header():
     auth_header \
