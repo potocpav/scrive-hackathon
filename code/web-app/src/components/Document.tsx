@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { useQuery } from '@apollo/client'
 import {
   DOCUMENTS,
@@ -21,7 +21,33 @@ interface Props {
 }
 
 const Document: React.FC<Props> = ({document, setPage}) => {
-  const { data, loading, error } = useQuery(DOCUMENTS)
+  // const { data, loading, error } = useQuery(DOCUMENTS)
+  const [queryText, setQueryText] = useState('');
+
+  const [queryLoading, setQueryLoading] = useState(false);
+
+
+  const handleQuery = async () => {
+    if (!queryText.trim()) return
+
+    console.log("queried");
+    setQueryLoading(true);
+    await new Promise(r => setTimeout(r, 2000));
+    console.log("2 seconds");
+    setQueryLoading(false);
+    // await search({ variables: { items: [{ name: searchText }] } })
+  }
+
+  var spinner;
+  if (queryLoading) {
+    spinner =
+      <button className="btn">
+      <span className="loading loading-spinner"></span>
+      Loading...
+    </button>;
+  } else {
+    spinner = '';
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -84,6 +110,30 @@ const Document: React.FC<Props> = ({document, setPage}) => {
             </tr> */}
           </tbody>
         </table>
+        <div>
+
+        <div className="form-control w-full">
+        <div className="join m-3">
+          <input
+            type="text"
+            placeholder="Query document"
+            className="join-item flex-grow input input-bordered input-md input-primary"
+            value={queryText}
+            onChange={(e) => setQueryText(e.target.value)}
+          />
+          <button
+            className="join-item btn btn-md btn-primary px-3"
+            onClick={handleQuery}
+          >
+            Query
+          </button>
+        </div>
+      </div>
+
+        {spinner}
+
+
+        </div>
       </div>
     </div>
   )
