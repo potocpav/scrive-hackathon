@@ -1,7 +1,7 @@
 import React from 'react';
 import { ApolloProvider } from '@apollo/client';
 import create_api_client from '../utils/apolloClient';
-import Items from './Items';
+import Documents from './Documents';
 
 interface AuthenticatedProps {
   userInfo: Record<string, any>;
@@ -16,13 +16,15 @@ function on_graphql_error(messages: string[]) {
 const Authenticated: React.FC<AuthenticatedProps> = ({ userInfo, logout, csrf }) => {
     return (
         <ApolloProvider client={create_api_client(csrf, on_graphql_error)}>
-            <div>
+            {/* <div>
                 Authenticated as: {JSON.stringify(userInfo)}
+            </div> */}
+            <div className="text-right">
+                <button className="m-1 mr-3" onClick={logout}>
+                    Logout
+                </button>
             </div>
-            <button onClick={logout}>
-                Logout
-            </button>
-            <Items />
+            <Documents />
         </ApolloProvider>
     )
 }
