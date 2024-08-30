@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
 import { useQuery } from '@apollo/client'
 import {
-  DOCUMENTS,
-} from '../graphql/documents'
+  DOCUMENT,
+} from '../graphql/document'
 
 interface DocumentT {
   id: string
@@ -20,11 +20,18 @@ interface Props {
   setPage: Function,
 }
 
+interface DocumentFile {
+  id: string,
+  name: string,
+}
+
 const Document: React.FC<Props> = ({document, setPage}) => {
   // const { data, loading, error } = useQuery(DOCUMENTS)
   const [queryText, setQueryText] = useState('');
 
   const [queryLoading, setQueryLoading] = useState(false);
+  const { data, loading, error } = useQuery(DOCUMENT, {variables:
+      {id: document.id, filename: document.filename}});
 
 
   const handleQuery = async () => {
@@ -38,15 +45,30 @@ const Document: React.FC<Props> = ({document, setPage}) => {
     // await search({ variables: { items: [{ name: searchText }] } })
   }
 
-  var spinner;
-  if (queryLoading) {
-    spinner =
-      <button className="btn">
+  const spinner =
+    <button className="btn">
       <span className="loading loading-spinner"></span>
       Loading...
     </button>;
+
+  var queryResult;
+  if (queryLoading) {
+    queryResult = spinner
   } else {
-    spinner = '';
+    queryResult = '';
+  }
+
+  var docPdf;
+  if (loading) {
+    docPdf = spinner
+  } else {
+    // console.log(data.documentFile.data);
+    const dataUrl = "data:application/pdf;base64," + data.documentFile.data
+    // console.log(screen.width)
+    docPdf =
+      <div className="my-5">
+        <iframe width="1000" height="1000" className="min-w-screen" src={dataUrl}></iframe>
+      </div>
   }
 
   return (
@@ -130,7 +152,9 @@ const Document: React.FC<Props> = ({document, setPage}) => {
         </div>
       </div>
 
-        {spinner}
+        {queryResult}
+
+        {docPdf}
 
 
         </div>

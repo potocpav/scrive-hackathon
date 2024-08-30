@@ -30,6 +30,7 @@ class DocumentFile:
     id:str
     name:str
     endpoint:str
+    data:str
 
 def list_documents():
     resultJson = scriveRequest('/api/v2/documents/list')
@@ -52,24 +53,29 @@ def streamTheFile(docPath:str):
 
 def get_documentFile(document_id:str, file_name:str):
     docPath = document_id + "_" + file_name
-    isExist = False
+    result = None
     try:
-        isExist = cb.get(env.get_couchbase_conf(),
+        result = cb.get(env.get_couchbase_conf(),
                         cb.DocRef(bucket=env.get_couchbase_bucket(),
                                     collection='docs',
                                     key=docPath))
     except:
-        pass    
-    if not isExist:
+        pass
+
+    if not result:
         result = scriveRequestFile('/api/v2/documents/' + document_id + '/files/main/' + file_name)
-        base64string = base64.b64encode(result.content)
+        base64string = base64.b64encode(result.content).decode('utf-8')
         cb.insert(env.get_couchbase_conf(),
                 cb.DocSpec(bucket=env.get_couchbase_bucket(),
                              collection='docs',
                             key=docPath,
-                            data={'base64string': str(base64string)}))
+                            data={'base64string': base64string}))
+        # print("new", base64string)
+    else:
+        base64string = result.value['base64string']
 
-    return DocumentFile(id=document_id, endpoint=docPath,name=file_name)
+
+    return DocumentFile(id=document_id, endpoint=docPath,name=file_name,data=base64string)
 
 @strawberry.type
 class Query:
@@ -80,7 +86,7 @@ class Query:
     @strawberry.field
     def documentFile(self, id:str, filename:str) -> DocumentFile:
         return get_documentFile(id, filename)
-    
+
 def get_auth_header():
     auth_header \
         = 'oauth_signature_method="PLAINTEXT", ' \
