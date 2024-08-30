@@ -99,7 +99,7 @@ def get_docuemntContent(docPath:str, query:str)->DocumentContent:
         pass
 
     if not isExist:
-        return DocumentContent(message="")
+        return DocumentContent(message="document not found")
 
     print(isExist)
     with open(docPath,"wb") as f:
