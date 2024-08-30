@@ -51,15 +51,7 @@ def streamTheFile(docPath:str):
         return None
 
 def get_documentFile(document_id:str, file_name:str):
-    result = scriveRequestFile('/api/v2/documents/' + document_id + '/files/main/' + file_name)
-
-    base64string = base64.b64encode(result.content)
-    #docFolder = "" # "tempfiles/"
     docPath = document_id + "_" + file_name
-    # if not os.path.exists(docFolder + docPath):
-    #     with open(docFolder + docPath,"wb") as f:
-    #         f.write(result.content)
-
     isExist = False
     try:
         isExist = cb.get(env.get_couchbase_conf(),
@@ -69,6 +61,8 @@ def get_documentFile(document_id:str, file_name:str):
     except:
         pass    
     if not isExist:
+        result = scriveRequestFile('/api/v2/documents/' + document_id + '/files/main/' + file_name)
+        base64string = base64.b64encode(result.content)
         cb.insert(env.get_couchbase_conf(),
                 cb.DocSpec(bucket=env.get_couchbase_bucket(),
                              collection='docs',
