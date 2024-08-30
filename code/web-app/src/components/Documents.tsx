@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { useQuery } from '@apollo/client'
 import {
   DOCUMENTS,
@@ -14,7 +14,14 @@ interface Props {
 }
 
 const Documents: React.FC<Props> = ({setPage}) => {
-  const { data, loading, error } = useQuery(DOCUMENTS)
+  const { data, loading, error } = useQuery(DOCUMENTS);
+  const [searchText, setSearchText] = useState('');
+
+
+  const handleSearch = async () => {
+    if (!searchText.trim()) return
+    // await search({ variables: { items: [{ name: searchText }] } })
+  }
 
   if (loading)
     return (
@@ -38,6 +45,24 @@ const Documents: React.FC<Props> = ({setPage}) => {
           </h1>
         </div>
       </div>
+
+      <div className="form-control w-full">
+              <div className="join m-3">
+                <input
+                  type="text"
+                  placeholder="Search documents"
+                  className="join-item flex-grow input input-bordered input-md input-primary"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
+                <button
+                  className="join-item btn btn-square btn-md btn-primary px-3"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </div>
+            </div>
 
       <div className="relative overflow-x-auto">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
