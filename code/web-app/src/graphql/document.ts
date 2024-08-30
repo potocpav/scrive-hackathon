@@ -7,9 +7,9 @@ export const DOCUMENT = gql`
 `;
 
 export const QUERY = gql`
-  query DocumentQuery($id: String!, $query: String!) {
-    documentQuery(id: $id, query: $query) {
-        response
+  query DocumentQuery($docPath: String!, $query: String!) {
+    documentContent(docPath: $docPath, query: $query) {
+        message
     }
   }
 `;

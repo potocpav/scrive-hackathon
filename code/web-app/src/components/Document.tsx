@@ -31,15 +31,18 @@ const Document: React.FC<Props> = ({document, setPage}) => {
   const [queryText, setQueryText] = useState('');
 
   const [queryLoading, setQueryLoading] = useState(false);
+
   const { data, loading, error } = useQuery(DOCUMENT, {variables:
       {id: document.id, filename: document.filename}});
+
   const [queryQuery, queryRes] = useLazyQuery(QUERY, {onCompleted: () => setQueryLoading(false)})
 
 
   const handleQuery = () => {
     if (!queryText.trim()) return
     setQueryLoading(true);
-    queryQuery({variables: {id: document.id, query: queryText}});
+    console.log(data.documentFile.endpoint);
+    queryQuery({variables: {docPath: data.documentFile.endpoint, query: queryText}});
     // await search({ variables: { items: [{ name: searchText }] } })
   }
 
@@ -50,10 +53,19 @@ const Document: React.FC<Props> = ({document, setPage}) => {
     </button>;
 
   var queryResult;
-  if (queryLoading) {
+  if (queryRes.loading) {
     queryResult = spinner
   } else {
-    queryResult = '';
+    if (queryRes.data) {
+      console.log("Result");
+      console.log(queryRes.data.documentContent);
+      queryResult =
+        <div>
+          {queryRes.data.documentContent.message}
+        </div>;
+    } else  {
+      queryResult = <div>Not asked.</div>
+    }
   }
 
   var docPdf;
