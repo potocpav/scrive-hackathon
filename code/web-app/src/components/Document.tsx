@@ -27,34 +27,65 @@ const Document: React.FC<Props> = ({document, setPage}) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="navbar bg-base-300 text-neutral-content">
+      <div className="navbar bg-base-300">
         <div className="flex-1">
-          <h1 className="text-2xl">
+          <h1 className="px-5 text-2xl">
               {document.name}
           </h1>
         </div>
       </div>
-      <div className="hover:underline hover:cursor-pointer" onClick={() => setPage({"name": "list"})}>
-        Back to document list
-      </div>
 
-      <div>
-        ID: {document.id}
-      </div>
-      <div>
-        Created at: {document.ctime}
-      </div>
-      <div>
-        Modified at: {document.mtime}
-      </div>
-      <div>
-        Status: {document.status}
-      </div>
-      <div>
-        tags: {document.tags}
-      </div>
-      <div>
-        JSON: {document.jsonstring}
+      <div className="mx-3">
+        <div className="hover:underline hover:cursor-pointer my-5" onClick={() => setPage({"name": "list"})}>
+        ← Back to document list
+        </div>
+
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                ID:
+              </td><td>
+                {document.id}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Created at:
+              </td><td>
+                {document.ctime}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Modified at:
+              </td><td>
+                {document.mtime}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Status:
+              </td><td>
+                {document.status}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                tags:
+              </td><td>
+                {document.tags ? (<i>empty</i>) : document.tags}
+              </td>
+            </tr>
+            {/* <tr>
+              <td>
+                JSON
+              </td><td>
+                {document.jsonstring}
+              </td>
+            </tr> */}
+          </tbody>
+        </table>
       </div>
     </div>
   )

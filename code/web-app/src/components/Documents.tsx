@@ -33,7 +33,7 @@ const Documents: React.FC<Props> = ({setPage}) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="navbar bg-base-300 text-neutral-content">
+      <div className="navbar bg-base-300">
         <div className="flex-1">
           <h1>
             <a href="/" className="p-2 normal-case text-2xl">
@@ -53,7 +53,7 @@ const Documents: React.FC<Props> = ({setPage}) => {
                   onChange={(e) => setSearchText(e.target.value)}
                 />
                 <button
-                  className="join-item btn btn-square btn-md btn-primary px-3"
+                  className="join-item btn btn-md btn-primary px-3"
                   onClick={handleSearch}
                 >
                   Search
