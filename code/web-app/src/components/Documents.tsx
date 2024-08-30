@@ -1,13 +1,10 @@
 import React, {useState} from 'react'
 import { useQuery } from '@apollo/client'
+import { DocumentT } from './Document'
 import {
   DOCUMENTS,
 } from '../graphql/documents'
 
-interface Item {
-  id: string
-  name: string
-}
 
 interface Props {
   setPage: Function
@@ -36,7 +33,7 @@ const Documents: React.FC<Props> = ({setPage}) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="navbar bg-base-300 text-neutral-content">
+      <div className="navbar bg-base-300">
         <div className="flex-1">
           <h1>
             <a href="/" className="p-2 normal-case text-2xl">
@@ -56,7 +53,7 @@ const Documents: React.FC<Props> = ({setPage}) => {
                   onChange={(e) => setSearchText(e.target.value)}
                 />
                 <button
-                  className="join-item btn btn-square btn-md btn-primary px-3"
+                  className="join-item btn btn-md btn-primary px-3"
                   onClick={handleSearch}
                 >
                   Search
@@ -69,35 +66,29 @@ const Documents: React.FC<Props> = ({setPage}) => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" className="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                         Document name
                     </th>
                     <th scope="col" className="px-6 py-3">
-                        Property 1
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                        Property 2
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                        ID
+                        Creation Time
                     </th>
                 </tr>
             </thead>
             <tbody className="hover:cursor-pointer">
               {
-              data.documents.map(({ name, id }: Item) => (
-                <tr key={id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
-                  onClick={() => setPage({"name": "document", "documentId": id})} >
-                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {name}
-                    </th>
-                    <td className="px-6 py-4">
-                        ToDo
+              data.documents.map((doc: DocumentT) => (
+                <tr key={doc.id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
+                  onClick={() => setPage({"name": "document", "document": doc})} >
+                    <td scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        {doc.status}
                     </td>
                     <td className="px-6 py-4">
-                        Something
+                        {doc.name}
                     </td>
                     <td className="px-6 py-4">
-                        {id}
+                        {doc.ctime}
                     </td>
                 </tr>
               ))}
