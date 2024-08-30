@@ -43,6 +43,7 @@ def aiquery(docPath:str, query:str)->str:
 
     retrieved_docs = retriever.invoke(query)
 
+    print(retrieved_docs)
     template = """Use the following pieces of context to answer the question at the end.
     If you don't know the answer, just say that you don't know, don't try to make up an answer.
     Use three sentences maximum and keep the answer as concise as possible.
@@ -101,7 +102,6 @@ def get_docuemntContent(docPath:str, query:str)->DocumentContent:
     if not isExist:
         return DocumentContent(message="document not found")
 
-    print(isExist)
     with open(docPath,"wb") as f:
         f.write(base64.b64decode(isExist.value["base64string"]))
 
