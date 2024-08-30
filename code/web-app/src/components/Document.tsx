@@ -23,8 +23,6 @@ interface Props {
 const Document: React.FC<Props> = ({document, setPage}) => {
   const { data, loading, error } = useQuery(DOCUMENTS)
 
-  console.log(document);
-
   return (
     <div className="min-h-screen flex flex-col">
       <div className="navbar bg-base-300">

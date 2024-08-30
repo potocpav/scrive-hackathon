@@ -16,6 +16,7 @@ function on_graphql_error(messages: string[]) {
 
 interface ListPage {
     name: "list";
+    // documents: null | [DocumentT];
 }
 
 interface DocumentPage {
