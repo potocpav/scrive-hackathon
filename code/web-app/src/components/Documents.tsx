@@ -9,7 +9,11 @@ interface Item {
   name: string
 }
 
-const Documents: React.FC = () => {
+interface Props {
+  setPage: Function
+}
+
+const Documents: React.FC<Props> = ({setPage}) => {
   const { data, loading, error } = useQuery(DOCUMENTS)
 
   if (loading)
@@ -56,7 +60,8 @@ const Documents: React.FC = () => {
             <tbody className="hover:cursor-pointer">
               {
               data.documents.map(({ name, id }: Item) => (
-                <tr key={id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800">
+                <tr key={id} className="bg-white border-b dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800"
+                  onClick={() => setPage({"name": "document", "documentId": id})} >
                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                         {name}
                     </th>
