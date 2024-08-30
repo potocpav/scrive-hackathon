@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { ApolloProvider } from '@apollo/client';
 import create_api_client from '../utils/apolloClient';
 import Documents from './Documents';
@@ -14,6 +14,8 @@ function on_graphql_error(messages: string[]) {
 }
 
 const Authenticated: React.FC<AuthenticatedProps> = ({ userInfo, logout, csrf }) => {
+    const [page, setPage] = useState(false);
+
     return (
         <ApolloProvider client={create_api_client(csrf, on_graphql_error)}>
             {/* <div>
@@ -25,6 +27,13 @@ const Authenticated: React.FC<AuthenticatedProps> = ({ userInfo, logout, csrf })
                 </button>
             </div>
             <Documents />
+            {/* {
+                if (page['name'] == 'list') {
+                    (<Documents setPage={setPage} />)
+                } else if (page['name'] == 'document') {
+
+                }
+            } */}
         </ApolloProvider>
     )
 }

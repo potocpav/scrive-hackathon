@@ -9,7 +9,7 @@ interface Item {
   name: string
 }
 
-const Documents: React.FC = () => {
+const Document: React.FC = () => {
   const { data, loading, error } = useQuery(DOCUMENTS)
 
   if (loading)
@@ -49,7 +49,7 @@ const Documents: React.FC = () => {
                         Property 2
                     </th>
                     <th scope="col" className="px-6 py-3">
-                        ID
+                        Property 3
                     </th>
                 </tr>
             </thead>
@@ -66,7 +66,7 @@ const Documents: React.FC = () => {
                         Something
                     </td>
                     <td className="px-6 py-4">
-                        {id}
+                        Unimplemented
                     </td>
                 </tr>
               ))}
@@ -77,4 +77,4 @@ const Documents: React.FC = () => {
   )
 }
 
-export default Documents
+export default Document
